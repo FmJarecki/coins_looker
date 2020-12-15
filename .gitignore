@@ -1,4 +1,3 @@
 # ignore all python binary
 __pycache__
 *.idea
-coins_looker

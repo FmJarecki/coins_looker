@@ -3,10 +3,9 @@ from web_scrapper import download_phrase_from_marker
 
 
 class Coin:
-    def __init__(self, name, price_lvls):
+    def __init__(self, name):
         self.__name = name.lower()
         self.__name = self.__name.replace(" ", "-")
-        self.__price_levels = price_lvls
         self.__short_name = download_phrase_from_marker(self.__name, 'script', 'symbol', 9, '\"')
         self.__price = 0.0
         self.update_price()

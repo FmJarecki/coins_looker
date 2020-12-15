@@ -1,19 +1,16 @@
 import sys
 from PyQt5 import QtWidgets
-from PyQt5.QtWidgets import QCompleter, QLineEdit, QGridLayout, QLabel, QPushButton
+from PyQt5.QtWidgets import QCompleter, QLineEdit, QGridLayout, QLabel, QPushButton, QDialog
 from web_scrapper import scrap_all_coins_from_market
 from coin import Coin
 import json
 
-class AddCoinGui:
-    def __init__(self):
-        self.__coins_names = scrap_all_coins_from_market()
-        self.__choosen_values = {}
 
-        app = QtWidgets.QApplication(sys.argv)
-        widget = QtWidgets.QWidget()
-        widget.resize(400, 200)
-        widget.setWindowTitle("This is PyQt Widget example")
+class AddCoinGui(QDialog):
+    def __init__(self, parent):
+        super(AddCoinGui, self).__init__(parent)
+        self.__coins_names = scrap_all_coins_from_market()
+        self.__coin_prices = []
 
         layout = QGridLayout()
 
@@ -44,23 +41,24 @@ class AddCoinGui:
         self.__accept_button.clicked.connect(self.__save_coin)
         layout.addWidget(self.__accept_button, 2, 0, 1, 2)
 
-        widget.setLayout(layout)
-        widget.show()
-        exit(app.exec_())
+        self.setLayout(layout)
+        self.setModal(True)
+        self.resize(300, 300)
+
+    def get_coin(self):
+        if len(self.__coin_prices) > 0:
+            return {self.__lineEdit.text(): self.__coin_prices}
+        else:
+            return {}
 
     def __save_coin(self):
-        with open('result.json', 'w') as fp:
-            json.dump(self.__choosen_values, fp)
+        self.close()
 
     def __accept_button_clicked(self):
-        key = self.__lineEdit.text()
-        if key in self.__choosen_values:
-            self.__choosen_values[key].append(self.__value_spin_box.value())
-        else:
-            self.__choosen_values[key] = [self.__value_spin_box.value()]
+        self.__coin_prices.append(self.__value_spin_box.value())
 
     def __on_text_changed(self):
         for coin_name in self.__coins_names:
             if self.__lineEdit.text() == coin_name:
-                btc = Coin(self.__lineEdit.text(), 5)
+                btc = Coin(self.__lineEdit.text())
                 self.__value_spin_box.setValue(btc.get_price())

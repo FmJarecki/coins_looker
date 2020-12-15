@@ -1,8 +1,16 @@
 from coin import Coin
-from add_coin_gui import AddCoinGui
 from main_gui import MainGui
+import sys
+from PyQt5.QtWidgets import QApplication
 
 if __name__ == "__main__":
-    MainGui()
-    #AddCoinGui()
+    app = QApplication(sys.argv)
+    gui = MainGui()
+    gui.resize(600, 600)
+    gui.show()
+    app.exec_()
+    gui.save_coins()
+
+
+
 
