@@ -1,9 +1,7 @@
-import sys
 from PyQt5 import QtWidgets
-from PyQt5.QtWidgets import QCompleter, QLineEdit, QGridLayout, QLabel, QPushButton, QDialog
+from PyQt5.QtWidgets import QCompleter, QLineEdit, QGridLayout, QLabel, QPushButton, QDialog, QRadioButton, QHBoxLayout
 from web_scrapper import scrap_all_coins_from_market
 from coin import Coin
-import json
 
 
 class AddCoinGui(QDialog):
@@ -33,13 +31,24 @@ class AddCoinGui(QDialog):
         self.__value_spin_box.setValue(0)
         layout.addWidget(self.__value_spin_box, 1, 0, 1, 1)
 
+        radiobuttons_lay = QGridLayout()
+        self.__up_radiobutton = QRadioButton("UP")
+        self.__up_radiobutton.setChecked(True)
+        radiobuttons_lay.addWidget(self.__up_radiobutton, 0, 0, 1, 1)
+
+        self.__down_radiobutton = QRadioButton("DOWN")
+        radiobuttons_lay.addWidget(self.__down_radiobutton, 0, 1, 1, 1)
+
+        layout.addLayout(radiobuttons_lay, 1, 1)
+        self.__radiobutton_state = 'UP'
+
         self.__accept_button = QPushButton("Add value")
         self.__accept_button.clicked.connect(self.__accept_button_clicked)
-        layout.addWidget(self.__accept_button, 1, 1, 1, 1)
+        layout.addWidget(self.__accept_button, 2, 0, 1, 2)
 
         self.__accept_button = QPushButton("Add coin and exit!")
         self.__accept_button.clicked.connect(self.__save_coin)
-        layout.addWidget(self.__accept_button, 2, 0, 1, 2)
+        layout.addWidget(self.__accept_button, 3, 0, 1, 2)
 
         self.setLayout(layout)
         self.setModal(True)
@@ -55,7 +64,8 @@ class AddCoinGui(QDialog):
         self.close()
 
     def __accept_button_clicked(self):
-        self.__coin_prices.append(self.__value_spin_box.value())
+        radiobutton_state = self.__up_radiobutton.isChecked()
+        self.__coin_prices.append((radiobutton_state, self.__value_spin_box.value()))
 
     def __on_text_changed(self):
         for coin_name in self.__coins_names:
